@@ -14,7 +14,7 @@ public class ClientHandler implements Runnable{
 
     public ClientHandler(Socket socket, List<ClientHandler> players, List<ClientHandler> waitingRoom){
         this.socket = socket;
-        this players = players;
+        this.players = players;
         ClientHandler.waitingRoom = waitingRoom;
     }
     
