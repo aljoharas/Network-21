@@ -9,12 +9,12 @@ public class ClientHandler implements Runnable{
     private BufferedReader in;
     private String playerName;
 
-    private List<ClientHandler> players;
+    private List<ClientHandler> Clients;
     private static List<ClientHandler> waitingRoom;
 
-    public ClientHandler(Socket socket, List<ClientHandler> players, List<ClientHandler> waitingRoom){
+    public ClientHandler(Socket socket, List<ClientHandler> clients, List<ClientHandler> waitingRoom){
         this.socket = socket;
-        this.players = players;
+        this.Clients = clients;
         ClientHandler.waitingRoom = waitingRoom;
     }
     
@@ -27,7 +27,11 @@ public class ClientHandler implements Runnable{
             out = new PrintWriter(socket.getOutputStream());
             out.flush();
 
-            
+            playerName = in.readLine().trim();
+
+            synchronized (Clients){
+                Clients.add(this);
+            }
 
             // Add an if statement for invalid player namesp
 
