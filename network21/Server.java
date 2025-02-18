@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Server {
     static Deck deck= new Deck();
-    static List<ClientHandler> Players=new ArrayList<>();
+    static List<ClientHandler> Clients=new ArrayList<>();
     static  List<ClientHandler> WaitingRoom=new ArrayList<>();
     private boolean gameStarted=false;
     static final int maxP=4;
@@ -21,7 +21,7 @@ public class Server {
     while(true){
         try{
             Socket clientSocket=serversocket.accept();
-            ClientHandler clienthandler = new ClientHandler(clientSocket, Players, WaitingRoom);
+            ClientHandler clienthandler = new ClientHandler(clientSocket, Clients, WaitingRoom);
             new Thread(clienthandler).start();
 
 
@@ -36,9 +36,12 @@ public class Server {
     e.printStackTrace();
 }}
 
+       public static synchronized void addToClients(ClientHandler client) {
         
+       }
     
  
+
 
 
     
@@ -58,7 +61,7 @@ public class Server {
     public void sendMessage(String message){
         out.println(message);
     }
-    public static synchronized void broadcastMesaage(String message){
+    public static synchronized void broadcastMessage(String message){
     
         for(ClientHandler client : client){
             client.sendMessage(message);
