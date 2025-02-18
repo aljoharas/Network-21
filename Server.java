@@ -15,19 +15,32 @@ public class Server {
 
 
  public static void main(String[] args) throws IOException {
-    ServerSocket serversocket = new ServerSocket(2121); 
+    try(ServerSocket serversocket = new ServerSocket(2121)) {
     System.out.println("Game Server Started!");
 
     while(true){
         try{
             Socket clientSocket=serversocket.accept();
             ClientHandler clienthandler = new ClientHandler(clientSocket, Players, WaitingRoom);
-            new Thread(ClientHandler).start();
+            new Thread(clienthandler).start();
 
 
+          
+        } catch (IOException e) {
+            System.out.println("Error accepting client connection: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+} catch (IOException e) {
+    System.out.println("Error starting server: " + e.getMessage());
+    e.printStackTrace();
+}}
+
+        
+    
+ 
 
 
-        }}
     
 
        public static synchronized void addToWaitingRoom(ClientHandler client){
@@ -46,6 +59,7 @@ public class Server {
         out.println(message);
     }
     public static synchronized void broadcastMesaage(String message){
+    
         for(ClientHandler client : client){
             client.sendMessage(message);
         }
