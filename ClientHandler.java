@@ -27,6 +27,10 @@ public class ClientHandler implements Runnable{
             out = new PrintWriter(socket.getOutputStream());
             out.flush();
 
+            playerName = in.readLine();
+
+            players.add(this);
+
             
 
             // Add an if statement for invalid player namesp
