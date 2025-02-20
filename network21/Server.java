@@ -1,3 +1,5 @@
+package network21;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -37,15 +39,11 @@ public class Server {
 }}
 
        public static synchronized void addToClients(ClientHandler client) {
-        
+        if (!Clients.contains(client)) {
+            Clients.add(client);
+        }//cc
        }
     
- 
-
-
-
-    
-
        public static synchronized void addToWaitingRoom(ClientHandler client){
             if(!WaitingRoom.contains(client)) {
                 WaitingRoom.add(client);
@@ -55,15 +53,17 @@ public class Server {
         }
     }
     public static synchronized void broadcastWaitingRoomList(){
-
+        for (ClientHandler client : WaitingRoom) {
+            client.sendMessage("Current waiting room list: " + WaitingRoom.size() + " players.");
+        }
         
-    }
+    }//cc
     public void sendMessage(String message){
         out.println(message);
     }
     public static synchronized void broadcastMessage(String message){
     
-        for(ClientHandler client : client){
+        for(ClientHandler client : Clients){
             client.sendMessage(message);
         }
     }

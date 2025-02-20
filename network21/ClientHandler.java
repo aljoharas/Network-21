@@ -1,3 +1,4 @@
+package network21;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
@@ -40,5 +41,14 @@ public class ClientHandler implements Runnable{
             e.printStackTrace();
         }
     }
+
+
+    public void sendMessage(String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sendMessage'");
+    }
+
+
+   
 
 }
