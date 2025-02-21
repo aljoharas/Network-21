@@ -1,54 +1,72 @@
 package network21;
+
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientHandler implements Runnable{
 
+    //public static List<ClientHandler> clients = new ArrayList<>();
+    //public static List<ClientHandler> waitingRoom = new ArrayList<>();
+
     private Socket socket;
-    private PrintWriter out;
     private BufferedReader in;
+    private PrintWriter out;
     private String playerName;
 
-    private List<ClientHandler> Clients;
-    private static List<ClientHandler> waitingRoom;
-
-    public ClientHandler(Socket socket, List<ClientHandler> clients, List<ClientHandler> waitingRoom){
+    public ClientHandler(Socket socket){
         this.socket = socket;
-        this.Clients = clients;
-        ClientHandler.waitingRoom = waitingRoom;
     }
-    
 
-    @Override
-    public void run() {
-        try {
+    
+    @Override 
+    public void run(){
+        try{
 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream());
-            out.flush();
 
-            playerName = in.readLine().trim();
+            playerName = in.readLine();
+            Server.clients.add(this);
+            System.out.println(playerName + " connected.");
 
-            synchronized (Clients){
-                Clients.add(this);
+            Server.broadcastClients();
+
+            while (true) {
+                String message = in.readLine(); // Read user input for the message
+                if (message.equalsIgnoreCase("exit")) { 
+                    removeClient();
+                    out.println("Client left.");
+                }
+                if (message.equalsIgnoreCase("connect")){
+                    Server.waitingRoom.add(this);
+                    System.out.println(playerName + " entered waiting room.");
+                    Server.broadcastWaitingRoom();
+                }
             }
 
-            // Add an if statement for invalid player namesp
+
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                    e.printStackTrace();
+        }finally{
+            
         }
+
     }
 
-
-    public void sendMessage(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendMessage'");
+    public void sendMessage(String message){
+        out.println(message + "\n");
+        out.flush();
     }
 
+    public String getPlayerName(){
+        return playerName;
+    }
 
-   
-
+    public void removeClient(){
+        Server.clients.remove(this);
+        Server.broadcastClients();
+    }
 }
