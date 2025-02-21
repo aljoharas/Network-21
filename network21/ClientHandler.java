@@ -1,4 +1,4 @@
-package network21;
+//package network21;
 
 import java.io.*;
 import java.net.Socket;
@@ -39,9 +39,9 @@ public class ClientHandler implements Runnable{
                     removeClient();
                     out.println("Client left.");
                 }
-                if (message.equalsIgnoreCase("connect")){
-                    Server.waitingRoom.add(this);
-                    System.out.println(playerName + " entered waiting room.");
+                if (message.equalsIgnoreCase("join")){
+                    String joined = join(message);
+                    out.println(joined);
                     Server.broadcastWaitingRoom();
                 }
             }
@@ -69,4 +69,13 @@ public class ClientHandler implements Runnable{
         Server.clients.remove(this);
         Server.broadcastClients();
     }
+
+    public String join(String join){
+        if(Server.waitingRoom.size()==4){
+            return "Cannot join game.";
+        }
+        Server.waitingRoom.add(this);
+        return playerName + " joined.";
+    }
+
 }
