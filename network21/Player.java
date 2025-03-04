@@ -33,7 +33,7 @@ public class Player extends javax.swing.JFrame {
         }
 
         try{
-            socket = new Socket("localhost", 2121);
+            socket = new Socket("10.6.200.241", 2121);
         out = new PrintWriter(socket.getOutputStream(), true); // Auto flush
 
         out.println(username);
