@@ -1,5 +1,3 @@
-
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -48,11 +46,14 @@ public class Server{
     }
     
     public static void broadcastWaitingRoom(){
-        StringBuilder playerList = new StringBuilder("Waiting Players: \n");
+        StringBuilder playerList = new StringBuilder("Waiting Players: "); //\n
 
         for (ClientHandler client: waitingRoom){
-            playerList.append(client.getPlayerName()).append("\n");
+            playerList.append(client.getPlayerName()).append(" "); //\n
         }
+
+        System.out.println("Broadcasting waiting room message: " + playerList.toString());
+        System.out.println("Number of players in waiting room: " + waitingRoom.size());
 
         for (ClientHandler client : waitingRoom){
             client.sendMessage(playerList.toString());

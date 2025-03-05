@@ -1,5 +1,3 @@
-
-
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -25,7 +23,7 @@ public class ClientHandler implements Runnable{
         try{
 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream());
+            out = new PrintWriter(socket.getOutputStream(),true);
 
             playerName = in.readLine();
             Server.clients.add(this);
@@ -42,7 +40,7 @@ public class ClientHandler implements Runnable{
                 if (message.equalsIgnoreCase("join")){
                     String joined = join(message);
                     out.println(joined);
-                    Server.broadcastWaitingRoom();
+                    //Server.broadcastWaitingRoom();
                 }
             }
 
@@ -57,7 +55,7 @@ public class ClientHandler implements Runnable{
     }
 
     public void sendMessage(String message){
-        out.println(message + "\n");
+        out.println(message);
         out.flush();
     }
 
@@ -67,14 +65,20 @@ public class ClientHandler implements Runnable{
 
     public void removeClient(){
         Server.clients.remove(this);
+        Server.waitingRoom.remove(this);
         Server.broadcastClients();
+        Server.broadcastWaitingRoom();
     }
 
-    public String join(String join){
-        if(Server.waitingRoom.size()==4){
+    public String join(String join) {
+        if (Server.waitingRoom.size() >= 4) {
             return "Cannot join game.";
         }
         Server.waitingRoom.add(this);
+        Server.clients.remove(this);
+        System.out.println(playerName + " joined the waiting room.");
+        Server.broadcastWaitingRoom();
+        Server.broadcastClients(); // Broadcast the updated waiting room
         return playerName + " joined.";
     }
 
