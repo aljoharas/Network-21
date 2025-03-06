@@ -72,7 +72,7 @@ public class ClientHandler implements Runnable{
 
     public String join(String join) {
         if (Server.waitingRoom.size() >= 4) {
-            return "Cannot join game.";
+            return "Cannot join game at this time. Try again in a few minutes.";
         }
         Server.waitingRoom.add(this);
         Server.clients.remove(this);
