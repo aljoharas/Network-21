@@ -17,7 +17,7 @@ public class Player extends javax.swing.JFrame {
 
                 UsernamePage.setVisible(true);
                 ConnectedRoom.setVisible(false);
-                WaitingPlayers.setVisible(false); // Initially hide the WaitingPlayers panel
+                WaitingRoom.setVisible(false); // Initially hide the WaitingPlayers panel
 
                 connectButton.addActionListener(evt -> connectToServer());
                 joinButton.addActionListener(evt -> joinWaitingRoom()); // Action for joinButton in ConnectedRoom
@@ -69,8 +69,8 @@ public class Player extends javax.swing.JFrame {
 
                 System.out.println("Switching to WaitingPlayers panel...");
                 ConnectedRoom.setVisible(false);
-                WaitingPlayers.setVisible(true);
-                System.out.println("WaitingPlayers panel visible: " + WaitingPlayers.isVisible());
+                WaitingRoom.setVisible(true);
+                System.out.println("WaitingPlayers panel visible: " + WaitingRoom.isVisible());
 
                 waitingPlayersList.setCaretPosition(waitingPlayersList.getDocument().getLength());
         }
@@ -81,7 +81,7 @@ public class Player extends javax.swing.JFrame {
 
                         // Handle message for "Waiting Players:"
                         if (message.startsWith("Waiting Players:")) {
-                                WaitingPlayers.setVisible(true); // Make sure the panel is visible now
+                                WaitingRoom.setVisible(true); // Make sure the panel is visible now
                                 waitingPlayersList.setText(""); // Clear the previous list
 
                                 // Extract the part after "Waiting Players:\n"
@@ -90,22 +90,24 @@ public class Player extends javax.swing.JFrame {
 
                                 waitingPlayersList.setText(playerList); // Update the text area with the player names
                                 waitingPlayersList.setCaretPosition(waitingPlayersList.getDocument().getLength());
+                        } else if (message.startsWith("00:")) {
+                                timer.setText("");
+                                timer.setText(message);
                         } else if (message.startsWith("Cannot join game at this time.")) {
                                 javax.swing.JOptionPane.showMessageDialog(this, message);
                                 ConnectedRoom.setVisible(true);
-                                WaitingPlayers.setVisible(false);
+                                WaitingRoom.setVisible(false);
                         }
                         // Handle other types of messages (e.g., connected players, etc.)
                         else if (message.startsWith("Connected Players:")) {
                                 connectedList.setText("");
                                 String displayMessage = message.substring("Connected Players:\n".length());
                                 connectedList.append(displayMessage);
+                                connectedList.setCaretPosition(connectedList.getDocument().getLength());
+                                ConnectedRoom.revalidate();
                         } else {
                                 connectedList.append(message + "\n");
                         }
-
-                        connectedList.setCaretPosition(connectedList.getDocument().getLength());
-                        ConnectedRoom.revalidate();
                 });
         }
 
@@ -116,15 +118,16 @@ public class Player extends javax.swing.JFrame {
                 connectedPlayers = new javax.swing.JScrollPane();
                 connectedList = new javax.swing.JTextArea();
                 UsernamePage = new javax.swing.JPanel();
-                jLabel1 = new javax.swing.JLabel();
+                usernamePrompt = new javax.swing.JLabel();
                 usernameField = new javax.swing.JTextField();
                 connectButton = new javax.swing.JButton();
 
                 // New panel for WaitingPlayers
-                WaitingPlayers = new javax.swing.JPanel();
-                waitingPlayersLabel = new javax.swing.JLabel();
+                WaitingRoom = new javax.swing.JPanel();
                 waitingPlayersList = new javax.swing.JTextArea();
                 JScrollPane waitingPlayersScroll = new javax.swing.JScrollPane(waitingPlayersList);
+                timer = new javax.swing.JLabel();
+                waitingRoomLabel = new javax.swing.JLabel();
 
                 // New "Join" button in ConnectedRoom panel
                 joinButton = new javax.swing.JButton();
@@ -173,9 +176,11 @@ public class Player extends javax.swing.JFrame {
 
                 UsernamePage.setToolTipText("");
 
-                jLabel1.setText("Enter your name:");
+                usernamePrompt.setText("Enter your name:");
 
                 connectButton.setText("Connect");
+
+                waitingRoomLabel.setText("Waiting Room");
 
                 javax.swing.GroupLayout UsernamePageLayout = new javax.swing.GroupLayout(UsernamePage);
                 UsernamePage.setLayout(UsernamePageLayout);
@@ -196,7 +201,7 @@ public class Player extends javax.swing.JFrame {
                                                 .addGroup(UsernamePageLayout.createSequentialGroup()
                                                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                                 Short.MAX_VALUE)
-                                                                .addComponent(jLabel1,
+                                                                .addComponent(usernamePrompt,
                                                                                 javax.swing.GroupLayout.PREFERRED_SIZE,
                                                                                 110,
                                                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -206,7 +211,7 @@ public class Player extends javax.swing.JFrame {
                                 UsernamePageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                 .addGroup(UsernamePageLayout.createSequentialGroup()
                                                                 .addGap(180, 180, 180)
-                                                                .addComponent(jLabel1,
+                                                                .addComponent(usernamePrompt,
                                                                                 javax.swing.GroupLayout.PREFERRED_SIZE,
                                                                                 27,
                                                                                 javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -224,21 +229,45 @@ public class Player extends javax.swing.JFrame {
                 waitingPlayersList.setRows(5);
                 waitingPlayersScroll.setViewportView(waitingPlayersList);
 
-                javax.swing.GroupLayout WaitingPlayersLayout = new javax.swing.GroupLayout(WaitingPlayers);
-                WaitingPlayers.setLayout(WaitingPlayersLayout);
+                javax.swing.GroupLayout WaitingPlayersLayout = new javax.swing.GroupLayout(WaitingRoom);
+                WaitingRoom.setLayout(WaitingPlayersLayout);
                 WaitingPlayersLayout.setHorizontalGroup(
                                 WaitingPlayersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                 .addGroup(WaitingPlayersLayout.createSequentialGroup()
                                                                 .addGap(243, 243, 243)
-                                                                .addComponent(waitingPlayersScroll,
-                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addGroup(WaitingPlayersLayout.createParallelGroup(
+                                                                                javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                .addComponent(waitingRoomLabel) // Add
+                                                                                                                // the
+                                                                                                                // "Waiting
+                                                                                                                // Room"
+                                                                                                                // label
+                                                                                                                // here
+                                                                                .addComponent(timer) // Keep
+                                                                                                                   // the
+                                                                                                                   // timer
+                                                                                                                   // label
+                                                                                                                   // here
+                                                                                .addComponent(waitingPlayersScroll,
+                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                                                javax.swing.GroupLayout.PREFERRED_SIZE))
                                                                 .addContainerGap(244, Short.MAX_VALUE)));
+
                 WaitingPlayersLayout.setVerticalGroup(
                                 WaitingPlayersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                 .addGroup(WaitingPlayersLayout.createSequentialGroup()
-                                                                .addGap(294, 294, 294)
+                                                                .addGap(220, 220, 220) // Adjust gap to position the
+                                                                                       // "Waiting Room" label above the
+                                                                                       // timer
+                                                                .addComponent(waitingRoomLabel) // Add the "Waiting
+                                                                                                // Room" label above the
+                                                                                                // timer
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(timer) // Place the timer
+                                                                                                   // label under the
+                                                                                                   // "Waiting Room"
+                                                                .addGap(18, 18, 18)
                                                                 .addComponent(waitingPlayersScroll,
                                                                                 javax.swing.GroupLayout.PREFERRED_SIZE,
                                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
@@ -266,7 +295,7 @@ public class Player extends javax.swing.JFrame {
                                                                                 Short.MAX_VALUE))
                                                 .addGroup(layout.createParallelGroup(
                                                                 javax.swing.GroupLayout.Alignment.LEADING)
-                                                                .addComponent(WaitingPlayers,
+                                                                .addComponent(WaitingRoom,
                                                                                 javax.swing.GroupLayout.Alignment.TRAILING,
                                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
@@ -288,7 +317,7 @@ public class Player extends javax.swing.JFrame {
                                                                                 Short.MAX_VALUE))
                                                 .addGroup(layout.createParallelGroup(
                                                                 javax.swing.GroupLayout.Alignment.LEADING)
-                                                                .addComponent(WaitingPlayers,
+                                                                .addComponent(WaitingRoom,
                                                                                 javax.swing.GroupLayout.Alignment.TRAILING,
                                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
                                                                                 javax.swing.GroupLayout.DEFAULT_SIZE,
@@ -306,14 +335,16 @@ public class Player extends javax.swing.JFrame {
         // Variables declaration - do not modify
         private javax.swing.JPanel ConnectedRoom;
         private javax.swing.JPanel UsernamePage;
-        private javax.swing.JPanel WaitingPlayers;
+        private javax.swing.JPanel WaitingRoom;
         private javax.swing.JButton connectButton;
         private javax.swing.JTextArea connectedList;
         private javax.swing.JScrollPane connectedPlayers;
-        private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel usernamePrompt;
         private javax.swing.JTextField usernameField;
         private javax.swing.JButton joinButton;
-        private javax.swing.JLabel waitingPlayersLabel;
+        private javax.swing.JLabel timer;
         private javax.swing.JTextArea waitingPlayersList;
+        private javax.swing.JLabel waitingRoomLabel;
+        private javax.swing.JLabel connectedRoomLabel;
         // End of variables declaration
 }

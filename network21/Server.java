@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.*;
 
 public class Server{
@@ -69,34 +67,41 @@ public class Server{
             client.sendMessage(playerList.toString());
         }
     }
+
     public static String join(ClientHandler client) {
         if (Server.waitingRoom.size() >= 4) {
             return "Cannot join game at this time. Try again in a few minutes";
         }
         Server.waitingRoom.add(client);
-        Server.clients.remove(client);
         System.out.println(client.getPlayerName() + " joined the waiting room.");
         Server.broadcastWaitingRoom();
-        Server.broadcastClients(); // Broadcast the updated waiting room
         if(Server.waitingRoom.size() >= 2 && !gameStarted){
             if(Server.waitingRoom.size() == 4) {
             
                 startGame();
             }
             else {
-                if(roomTimer == null) {
-                    roomTimer = new Timer();
-                    roomTimer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            startGame();
-                        }
+                if (roomTimer == null) {
+                roomTimer = new Timer();
+                roomTimer.scheduleAtFixedRate(new TimerTask() {
+                    private int countdown = 30; // Countdown from 30 seconds
 
-                    }, 30000);
-                }
+                    @Override
+                    public void run() {
+                        // Send the countdown to all clients in the waiting room
+                        if (countdown > 0) {
+                            broadcastTimer(countdown);
+                            countdown--;
+                        } else {
+                            broadcastTimer(countdown);
+                            startGame();
+                            roomTimer.cancel();
+                        }
+                    }
+                }, 0, 1000);
             }
         }
-       
+    }
         return client.getPlayerName() + " joined.";
     }
 
@@ -106,9 +111,19 @@ public class Server{
         else {
         gameStarted=true;
         System.out.println("started"); }
+    }
 
-        
-
+    public static void broadcastTimer(int countdown) {
+        String t;
+        if(countdown<=9){
+            t = "0"+countdown;
+        } else {
+            t = countdown + "";
+        }
+        String timeLeft = "00:" + t;
+        for (ClientHandler client : waitingRoom){
+            client.sendMessage(timeLeft);
+        }
     }
 
 }

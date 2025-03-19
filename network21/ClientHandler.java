@@ -75,33 +75,6 @@ public class ClientHandler implements Runnable{
         Server.broadcastWaitingRoom();
     }
 
-   /* public String join(String join) {
-        if (Server.waitingRoom.size() >= 4) {
-            return "Cannot join game at this time. Try again in a few minutes";
-        }
-        Server.waitingRoom.add(this);
-        if(Server.waitingRoom.size() >= 2 && !gameStarted){
-            if(Server.waitingRoom.size() == 4) {
-                // start the game
-            }
-            else {
-                if(roomTimer == null) {
-                    roomTimer = new Timer();
-                    roomTimer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            //start game
-                        }
-
-                    }, 30000);
-                }
-            }
-        }
-        Server.clients.remove(this);
-        System.out.println(playerName + " joined the waiting room.");
-        Server.broadcastWaitingRoom();
-        Server.broadcastClients(); // Broadcast the updated waiting room
-        return playerName + " joined.";
-    } */
+   
 
 }
